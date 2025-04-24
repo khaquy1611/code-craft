@@ -1,4 +1,6 @@
+import EditorPanel from "./_components/EditorPanel";
 import Header from "./_components/Header";
+import OutputPanel from "./_components/OuputPanel";
 
 const Home = () => {
   return (
@@ -7,7 +9,8 @@ const Home = () => {
         <Header />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          edit and previews
+        <EditorPanel />
+        <OutputPanel />
         </div>
       </div>
     </div>
