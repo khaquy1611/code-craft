@@ -73,8 +73,8 @@ export const deleteSnippet = mutation({
 
 export const starSnippet = mutation({
   args: {
-    userId: v.id("users"),
     snippetId: v.id("snippets"),
+    userId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -93,7 +93,7 @@ export const starSnippet = mutation({
       await ctx.db.delete(existing._id);
     } else {
       await ctx.db.insert("stars", {
-        userId: args.userId,
+        userId: args.userId ?? (ctx.db.normalizeId("users", identity.subject) ?? (() => { throw new Error("Invalid user ID"); })()),
         snippetId: args.snippetId,
       });
     }
