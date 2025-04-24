@@ -17,7 +17,7 @@ export const saveExecution = mutation({
     // check pro status
     const user = await ctx.db
       .query("users")
-      .withIndex("byUserId")
+      .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), identity.subject))
       .first();
 
@@ -40,7 +40,7 @@ export const getUserExecutions = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("codeExecutions")
-      .withIndex("byUserId")
+      .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), args.userId))
       .order("desc")
       .paginate(args.paginationOpts);
@@ -52,7 +52,7 @@ export const getUserStats = query({
   handler: async (ctx, args) => {
     const executions = await ctx.db
       .query("codeExecutions")
-      .withIndex("byUserId")
+      .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), args.userId))
       .collect();
 
@@ -65,9 +65,7 @@ export const getUserStats = query({
 
     // Get all starred snippet details to analyze languages
     const snippetIds = starredSnippets.map((star) => star.snippetId);
-    const snippetDetails = await Promise.all(
-      snippetIds.map((id) => ctx.db.get(id))
-    );
+    const snippetDetails = await Promise.all(snippetIds.map((id) => ctx.db.get(id)));
 
     // Calculate most starred language
     const starredLanguages = snippetDetails.filter(Boolean).reduce(
@@ -81,8 +79,7 @@ export const getUserStats = query({
     );
 
     const mostStarredLanguage =
-      Object.entries(starredLanguages).sort(([, a], [, b]) => b - a)[0]?.[0] ??
-      "N/A";
+      Object.entries(starredLanguages).sort(([, a], [, b]) => b - a)[0]?.[0] ?? "N/A";
 
     // Calculate execution stats
     const last24Hours = executions.filter(
@@ -99,9 +96,7 @@ export const getUserStats = query({
 
     const languages = Object.keys(languageStats);
     const favoriteLanguage = languages.length
-      ? languages.reduce((a, b) =>
-          languageStats[a] > languageStats[b] ? a : b
-        )
+      ? languages.reduce((a, b) => (languageStats[a] > languageStats[b] ? a : b))
       : "N/A";
 
     return {

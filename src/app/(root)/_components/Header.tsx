@@ -12,7 +12,7 @@ import HeaderProfileBtn from "./HeaderProfileBtn";
 const Header = async () => {
   const convex = new ConvexClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
   const user = await currentUser();
-  const convexUser = await convex.mutation(api.users.getUser, {
+  const convexUser = await convex.query(api.users.getUser, {
     userId: user?.id || "",
   });
 

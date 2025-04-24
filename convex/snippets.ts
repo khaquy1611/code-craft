@@ -13,7 +13,7 @@ export const createSnippet = mutation({
 
     const user = await ctx.db
       .query("users")
-      .withIndex("byUserId")
+      .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), identity.subject))
       .first();
 
@@ -74,7 +74,6 @@ export const deleteSnippet = mutation({
 export const starSnippet = mutation({
   args: {
     snippetId: v.id("snippets"),
-    userId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -93,7 +92,7 @@ export const starSnippet = mutation({
       await ctx.db.delete(existing._id);
     } else {
       await ctx.db.insert("stars", {
-        userId: args.userId ?? (ctx.db.normalizeId("users", identity.subject) ?? (() => { throw new Error("Invalid user ID"); })()),
+        userId: identity.subject,
         snippetId: args.snippetId,
       });
     }
@@ -111,7 +110,7 @@ export const addComment = mutation({
 
     const user = await ctx.db
       .query("users")
-      .withIndex("byUserId")
+      .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), identity.subject))
       .first();
 

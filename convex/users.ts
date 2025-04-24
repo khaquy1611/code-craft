@@ -1,7 +1,7 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
-export const syncUsers = mutation({
+export const syncUser = mutation({
   args: {
     userId: v.string(),
     email: v.string(),
@@ -24,14 +24,18 @@ export const syncUsers = mutation({
   },
 });
 
-export const getUser = mutation({
+export const getUser = query({
   args: { userId: v.string() },
+
   handler: async (ctx, args) => {
     if (!args.userId) return null;
+
     const user = await ctx.db
       .query("users")
+      .withIndex("by_user_id")
       .filter((q) => q.eq(q.field("userId"), args.userId))
       .first();
+
     if (!user) return null;
 
     return user;
